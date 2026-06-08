@@ -1,0 +1,114 @@
+
+
+=== PAGE 1 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  1 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+ 
+Intern 
+ TECHNICAL DESCRIPTION  EXTERNAL OWN WAGERS API:S    
+
+=== PAGE 2 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  2 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+2 (14) 
+Intern 
+ CONTENT 1 INTRODUCTION 4 1.1 Purpose 4 1.2 Scope 4 2 API Versions 4 2.1 Version numbers 4 2.2 API removal 5 2.3 Content Type 5 2.4 API-key 5 3 Use case 5 3.1 Upload 5 3.2 Verify 5 3.3 Personal or Group wagers 6 3.4 Limits 6 4 Example of wagers 7 4.1 Stryktips/Europatips 7 4.2 Måltipset 8 4.3 Powerplay 10 4.4 Topptipset, Topptipset Europa and Topptipset Stryk 11 4.5 Oddset Bomben 12 4.6 Fullträff 13  
+
+=== PAGE 3 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  3 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+3 (14) 
+Intern 
+ REVISION HISTORY Revision no Date Affected Pages Reason Sign. 2.0 2021-09-17 All Rewritten to English tana 2.1 2021-10-06 Limits Board size tana 2.2 2021-10-07 Limits Personal/Group wagers Rickard 2.3 2021-10-10 Limits Board size tana 2.5 2022-05-10 4.3 Powerplay 3 valid Betrowamount for Powerplay KAFG 
+2.6 2022-06-10 Fullträff, limits Rename mahj 2.7 2023-01-18 Remove Lotto Removed mahj    
+
+=== PAGE 4 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  4 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+4 (14) 
+Intern 
+1 INTRODUCTION  1.1 Purpose “Externa Systemspel” is a service on Svenska Spel's site where customers can place wagers using text files in a special format or by calling some of the APIs that Svenska Spel offers.  A general introduction and some detailed information regarding the service can be found on respective web sites (login required). That’s also where upload of text files is done. Navigate to https://spela.svenskaspel.se click on “Mer” and select “Externa systemspel” 1.2 Scope This document describes the APIs that are available for placing wagers towards Svenska Spel. The information is mainly addressed to system developers and similar roles who master and understand the underlying principles and terms used in this document.  I.e. the document will not cover the principles behind how clients on the Internet download and send data, or what https means. 2 API Versions 2.1 Version numbers Svenska Spels external API:s use a numeric versioning system in its URL:s. If breaking changes must be implemented in an API, that API will receive a new URL with an increased version number leaving the previous API version unchanged. 2.1.1 Example Let’s say the API to fetch current draws for product Matchen needs a change that breaks the API contract. To get the new features, use the new URL with an increased version number like: https://api.www.svenskaspel.se/external/2/draw/matchen/draws (notice the 2 in the URL) At the same time the previous version still functions just as before on the unchanged URL: https://api.www.svenskaspel.se/external/1/draw/matchen/draws 
+
+=== PAGE 5 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  5 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+5 (14) 
+Intern 
+2.2 API removal If there are any reason where it is not possible to maintain an old version, we will give notice in advance for you to update your software well before an old API version is removed. 2.3 Content Type Content-Type and charset must always enter in the post header: application/json;charset=utf-8 For example: https://api.www.svenskaspel.se/external/1/wager/ownwager/stryktipset?accesskey=test7b9de3-5cbf-37c8-8n34-test3df954f8f Content-Type: application/json;charset=utf-8   2.4 API-key The api-key only needs to be sent one time for each document.  3 Use case 3.1 Upload When the customer chooses to upload the wager, the web client (Svenska Spel's web service, the service where Svenska Spel's customers can play on the products that Svenska Spel offers) creates a JSON document and sends it as an http-post to the generic url: https://api.www.svenskaspel.se/external/1/wager/ownwager/{product_name}?accesskey=??? Content-Type: application/json;charset=utf-8  3.2 Verify When the upload of the wager is complete, a reply is sent back (see below) with a URL that the customer must use to acknowledge their wagers.  The customer must go to this URL within 30 minutes, otherwise the uploaded wagers will be deleted. Please note that this URL may change so it is important that it is not hardcoded by the software manufacturer. The customer will get a login prompt and can after that chose to pay or cancel the wagers. 
+
+=== PAGE 6 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  6 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+6 (14) 
+Intern 
+3.3 Personal or Group wagers When paying for an uploaded bet the customers can either place the bet towards their own account and available balance or towards a balance of a specific group where the customer is a member (with relevant permissions). The service for placing bets on behalf of a group is named “Spela Tillsammans” at Svenska Spel.  Please note that different size limits on the bets is applied due to technical reasons.  3.4 Limits  There is a limit of how many items a wager can contain and a max wager amount of 20 000 SEK. If any of these limits exceed the customer get an error message and the upload fails. 3.4.1 Personal wager 3.4.1.1 Stryktipset, Europatipset Single item:  10.000 M-system: 1.000 3.4.1.2 Topptipset, Powerplay  Single item:  1.000 M-system: 100 3.4.1.3 Måltipset Single item:  10.000 (8.000 reach the limit of 20.000 SEK)  3.4.1.4 Bomben Single item:  10.000 3.4.1.5 Fullträff Single item:  10.000 M-system:  10.000  3.4.2 Group wagers (Spela Tillsammans) 
+
+=== PAGE 7 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  7 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+7 (14) 
+Intern 
+3.4.2.1 Stryktipset, Europatipset Single item:  2.200 M-system: 950 3.4.2.2 Topptipset, Powerplay Single item:  1.000 M-system: 100 3.4.2.3 Fullträff Single item:  1.000 M-system: 550 3.4.2.4 Måltipset Single item:  1.600 3.4.2.5 Bomben Number of events Max items 2 3.300 3 2.200 4 1.600 5 1.300 6 1.100  4 Example of wagers 4.1 Stryktips/Europatips {      "drawNumber":0,    "system":"single",    "items":[         "1,X,2,1,X,2,1,X,2,1,X,2,1",       "1,X,2,1,X,2,1,X,2,1,X,2,1"    ],    "client":"Externa Systemspelsappen 1.0",    "retailer":"820206" }  {      "drawNumber":0,    "system":"math", 
+
+=== PAGE 8 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  8 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+8 (14) 
+Intern 
+   "items":[         "1X,1X,X2,1X2,X,X2,1X,1X,X2,1X,X,X2,1"    ],    "client":"Externa Systemspelsappen 1.0",    "retailer":"820206" } drawNumber 0 = wager is on the draw that is next to close. Else the wager is on the specified draw. system What type of wager  ”single”  - Single system ”math”  - Mathematically system items The items in the format describe above. client Name (and version) of the uploading client program. retailer Retailer number or partner name. url https://api.www.svenskaspel.se/external/1/wager/ownwager/stryktipset https://api.www.svenskaspel.se/external/1/wager/ownwager/europatipset  4.2 Måltipset {    "drawNumber":0,    "system":"single",    "items":[       "1,3,5,16,18,21,23,30",       "2,3,6,7,11,15,17,27"    ],    "client":"Externa Systemspelsappen 1.0",    "retailer":"820206" }  
+
+=== PAGE 9 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  9 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+9 (14) 
+Intern 
+drawNumber 0 = wager is on the draw that is next to close. Else the wager is on the specified draw. system What type of wager  ”single”  - Single system ”math”  - Mathematically system items The items in the format describe above. client Name (and version) of the uploading client program. retailer Retailer number or partner name. url https://api.www.svenskaspel.se/external/1/wager/ownwager/maltipset 
+
+=== PAGE 10 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  10 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+10 (14) 
+Intern 
+4.3 Powerplay {    "drawNumber":0,    "betRowAmount":5,    "system":"single",    "items":[       "1,1,2,X,X,2,1,X",       "2,1,2,X,X,2,1,X"    ],    "client":"Externa Systemspelsappen 1.0",    "retailer":"820206" }  {    "drawNumber":0,    "betRowAmount":5,    "system":"math",    "items":[       "1X2,1X,X2,1X,1X,1X2,1,1X"    ],    "client":"Externa Systemspelsappen 1.0",    "retailer":"820206" } drawNumber 0 = wager is on the draw that is next to close. Else the wager is on the specified draw. betRowAmount Stake in SEK per row. Allowed stakes are 1, 2, 3, 5 and 10. system What type of wager  ”single”  - Single system ”math”  - Mathematically system items The items in the format describe above. client Name (and version) of the uploading client program. retailer Retailer number or partner name. 
+
+=== PAGE 11 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  11 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+11 (14) 
+Intern 
+url https://api.www.svenskaspel.se/external/1/wager/ownwager/powerplay  4.4 Topptipset, Topptipset Europa and Topptipset Stryk  {      "drawNumber":0,    "betRowAmount":5,    "system":"single",    "items":[         "1,1,2,X,X,2,1,X",       "2,1,2,X,X,2,1,X"    ],    "client":"Externa Systemspelsappen 1.0",    "retailer":"820206" }  {    "drawNumber":0,    "betRowAmount":5,    "system":"math",    "items":[       "1X2,1X,X2,1X,1X,1X2,1,1X"    ],    "client":"Externa Systemspelsappen 1.0",    "retailer":"820206" } DrawNumber 0 = wager is on the draw that is next to close. Else the wager is on the specified draw. betRowAmount Stake in SEK per row. Allowed stakes are 1, 2, 3, 5 and 10. System What type of wager  ”single”  - Single system ”math”  - Mathematically system Items The items in the format describe above. 
+
+=== PAGE 12 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  12 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+12 (14) 
+Intern 
+Client Name (and version) of the uploading client program. Retailer Retailer number or partner name. Url https://api.www.svenskaspel.se/external/1/wager/ownwager/topptipset https://api.www.svenskaspel.se/external/1/wager/ownwager/topptipseteuropa https://api.www.svenskaspel.se/external/1/wager/ownwager/topptipsetstryk   4.5 Oddset Bomben {    "drawNumber":0,    "bombenNumber":2,    "betRowAmount":1,    "system":"single",    "items":[       "0-1,0-0,3-1",       "0-1,1-1,3-1",       "0-1,0-1,3-1"    ],    "client":" Externa Systemspelsappen 1.0",    "retailer":"820206" } drawNumber or bombenNumber Draw number or Bomben number must be specified, if both is specified then Bomben number is used. betRowAmount Stake in SEK per row. Allowed stakes are 1 - 500.  system What type of wager  ”single”  - Single system ”math”  - Mathematically system 
+
+=== PAGE 13 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  13 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+13 (14) 
+Intern 
+items The items in the format describe above. client Name (and version) of the uploading client program. retailer Retailer number or partner name. url https://api.www.svenskaspel.se/external/1/wager/ownwager/bomben 4.6 Fullträff System: Single {     "drawNumber": 0,     "system": "single",     "sport": "soccer",     "items":         [             "0,1,2,3,4,5,6,F,0,1,2,3,4",             "2,3,1,0,5,1,2,6,3,2,1,4,2"         ],     "client": "The client App",     "retailer": "1234567" } System: Math {     "drawNumber": 0,     "system": "math",     "sport": "soccer",     "items":         [             "1,0123456F,345,56,0,3,1234,2,1,3,1,1,2",             "2,3,1234,045,5,1,2,23,4,5,6,3,2"         ],     "client": "The client App",     "retailer": "1234567" } drawNumber 0 = wager is on the draw that is next to close. Else the wager is on the specified draw. 
+
+=== PAGE 14 ===
+ 
+ 
+Dokumentnamn Dokumentnummer Sida External Own Wagers  14 (14) Datum Dokumenttyp 2023-01-18  Handläggare Fastställt av Distribution Revisionsnummer Team Helios   2.7  
+14 (14) 
+Intern 
+system  What type of wager  ”single”  - Single system ”math”  - Mathematically system sport Sport, “soccer” or “hockey”. Initially only soccer is allowed. Items The items in the format describe above. client Name (and version) of the uploading client program. retailer Retailer number or partner name. url https://api.www.svenskaspel.se/external/1/wager/ownwager/fulltraff  

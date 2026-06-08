@@ -1,0 +1,28 @@
+{
+  "name": "svenskaspel",
+  "version": "1.0.0",
+  "description": "Topptipset historical import pipeline backed by Neon Postgres",
+  "main": "scripts/sync-topptipset-neon.js",
+  "scripts": {
+    "sync:topptipset": "node scripts/sync-topptipset-neon.js",
+    "import:tipsxtra:topptipset": "node scripts/import-tipsxtra-topptipset.js",
+    "import:tipsxtra:topptipset:history": "node scripts/import-tipsxtra-topptipset-history.js",
+    "backfill:topptipset:results": "node scripts/backfill-topptipset-results.js",
+    "backfill:rapidapi:topptipset": "node scripts/backfill-topptipset-rapidapi.js",
+    "backtest:topptipset:roi": "node scripts/backtest-topptipset-roi.js",
+    "backtest:topptipset:real": "node scripts/backtest-topptipset-real-payout.js",
+    "optimize:topptipset:roi": "npm run import:tipsxtra:topptipset:history && npm run backtest:topptipset:roi",
+    "optimize:topptipset:real": "npm run import:tipsxtra:topptipset:history && npm run backfill:topptipset:results && npm run backtest:topptipset:real",
+    "verify:rapidapi:one": "node scripts/verify-rapidapi-match.js",
+    "start": "node scripts/sync-topptipset-neon.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "dotenv": "^17.4.2",
+    "pg": "^8.21.0"
+  }
+}

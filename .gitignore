@@ -1,0 +1,24 @@
+node_modules/
+
+# Secrets and local env
+.env
+.env.*
+!.env.example
+
+# Local tooling
+.codegraph/
+.codex/
+
+# Generated outputs
+logs/
+reports/
+raw_data.db
+
+# Temporary verification artifacts
+curl_body*.txt
+curl_headers*.txt
+rapidapi-verify-*.json
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
