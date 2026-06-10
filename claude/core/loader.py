@@ -14,6 +14,7 @@ Designprinciper:
 """
 from __future__ import annotations
 
+import os
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -336,6 +337,125 @@ def load_from_sqlite(
         draw_column_map=draw_column_map,
         match_column_map=match_column_map,
     )
+
+
+def load_from_postgres(database_url: Optional[str] = None) -> list[DrawData]:
+    """
+    Läser in data från Postgres via DATABASE_URL.
+    """
+    import warnings
+
+    from dotenv import load_dotenv
+    import psycopg2
+
+    load_dotenv()
+    if database_url is None:
+        try:
+            database_url = os.environ["DATABASE_URL"]
+        except KeyError as exc:
+            raise RuntimeError("DATABASE_URL saknas") from exc
+
+    conn = psycopg2.connect(database_url)
+    try:
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message="pandas only supports SQLAlchemy connectable.*",
+                category=UserWarning,
+            )
+            draws_df = pd.read_sql_query(
+                """
+                SELECT
+                  d.draw_number,
+                  d.draw_code,
+                  d.first_match_start,
+                  d.svenska_spel_result_amount AS payout_8_correct,
+                  d.svenska_spel_result_winners AS num_winners,
+                  d.svenska_spel_result_turnover AS turnover
+                FROM tipsxtra_topptipset_complete_real_payout_draws d
+                ORDER BY d.draw_number ASC
+                """,
+                conn,
+            )
+            matches_df = pd.read_sql_query(
+                """
+                SELECT
+                  e.draw_number,
+                  e.event_number,
+                  e.home_team,
+                  e.away_team,
+                  e.outcome AS actual_outcome,
+                  e.market_pct_home,
+                  e.market_pct_draw,
+                  e.market_pct_away,
+                  e.public_pct_home,
+                  e.public_pct_draw,
+                  e.public_pct_away,
+                  e.match_start
+                FROM tipsxtra_topptipset_events e
+                JOIN tipsxtra_topptipset_complete_real_payout_draws d
+                  ON d.draw_number = e.draw_number
+                WHERE e.outcome IN ('1', 'X', '2')
+                  AND e.market_pct_home > 0
+                  AND e.market_pct_draw > 0
+                  AND e.market_pct_away > 0
+                  AND e.public_pct_home > 0
+                  AND e.public_pct_draw > 0
+                  AND e.public_pct_away > 0
+                ORDER BY e.draw_number ASC, e.event_number ASC
+                """,
+                conn,
+            )
+    finally:
+        conn.close()
+
+    if matches_df.empty:
+        return []
+
+    match_counts = (
+        matches_df.groupby("draw_number")
+        .size()
+        .rename("match_count")
+        .reset_index()
+    )
+    winning_rows = (
+        matches_df.sort_values(["draw_number", "event_number"])
+        .groupby("draw_number", as_index=False)
+        .agg(actual_winning_row=("actual_outcome", "".join))
+    )
+    draws_df = draws_df.merge(match_counts, on="draw_number", how="inner")
+    draws_df = draws_df[draws_df["match_count"] == 8].drop(columns=["match_count"])
+    draws_df = draws_df.merge(winning_rows, on="draw_number", how="inner")
+    matches_df = matches_df[matches_df["draw_number"].isin(draws_df["draw_number"])]
+    draws_df = draws_df[
+        [
+            "draw_number",
+            "draw_code",
+            "first_match_start",
+            "actual_winning_row",
+            "payout_8_correct",
+            "num_winners",
+            "turnover",
+        ]
+    ]
+    matches_df = matches_df[
+        [
+            "draw_number",
+            "event_number",
+            "home_team",
+            "away_team",
+            "actual_outcome",
+            "market_pct_home",
+            "market_pct_draw",
+            "market_pct_away",
+            "public_pct_home",
+            "public_pct_draw",
+            "public_pct_away",
+            "match_start",
+        ]
+    ]
+
+    return load_from_dataframes(draws_df, matches_df)
 
 
 # ---------------------------------------------------------------------------

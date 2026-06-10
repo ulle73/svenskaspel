@@ -1,0 +1,6 @@
+edge_threshold,max_signs,max_rows,min_edge_sum,selected_folds,positive_test_folds,avg_test_rows,avg_test_roi,total_test_profit_kr,total_test_wins,worst_test_drawdown
+0.0,3,100,,2,1,42.8,4.145538,36422.0,1,100
+0.0,2,100,,2,1,43.0,0.429957,4803.0,2,100
+0.0,3,20,,6,0,15.4,-1.0,-9255.0,0,100
+0.01,2,50,,5,0,13.6,-1.0,-6786.0,0,100
+0.0,2,20,,1,0,15.5,-1.0,-1552.0,0,100

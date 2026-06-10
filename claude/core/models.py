@@ -67,7 +67,7 @@ class MatchData:
         return {
             "1": {"market": self.market_pct_home, "public": self.public_pct_home},
             "X": {"market": self.market_pct_draw, "public": self.public_pct_draw},
-            "2": {"market": self.market_pct_away, "public": self.market_pct_away},
+            "2": {"market": self.market_pct_away, "public": self.public_pct_away},
         }
 
 
